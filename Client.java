@@ -42,7 +42,7 @@ public class Client {
 					closeConnection(); // Call the closeConnection() method to terminate the connection
 					break;
 				}
-				bufferedWriter.write(username + ": " + messageToSend);
+				bufferedWriter.write(messageToSend);
 				bufferedWriter.newLine();
 				bufferedWriter.flush();
 			}
@@ -50,12 +50,6 @@ public class Client {
 			closeAll(socket, bufferedReader, bufferedWriter);
 		}
 	}
-
-	// Method to send math calculation request to the server
-	public void sendMathRequest(String request) {
-		// Send the math calculation request to the server
-	}
-
 
 	// Another thread to avoid blocking, allows people to read messages without having to write message
 	public void listenForMessage() {
@@ -67,6 +61,9 @@ public class Client {
 				while(socket.isConnected()) {
 					try {
 						msgFromChat = bufferedReader.readLine();
+                        if (msgFromChat == null) {
+                            break;
+                        }
 						System.out.println(msgFromChat);
 					} catch (IOException e) {
 						closeAll(socket, bufferedReader, bufferedWriter);

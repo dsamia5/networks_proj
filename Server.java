@@ -35,8 +35,18 @@ public class Server {
 
     // Method to handle incoming math calculation requests
     public void handleMathRequest(String request, ClientHandler clientHandler) {
-        // Implement math calculation logic here
-        // For simplicity, let's assume the request format is "calculate <operation> <operands>"
+        // Remove "calculate" from the beginning of the request
+        String expression = request.substring("calculate".length()).trim();
+        MathHelper mh = new MathHelper();
+        double result = mh.evaluate(expression);
+        if(Double.isNaN(result)) {
+            this.logActivity(clientHandler.username() + " entered invalid expression: " + expression);
+            clientHandler.sendMessage("Invalid expression: " + expression);
+            return;
+        }
+        String resultStr = expression + " = " + result;
+        this.logActivity(clientHandler.username() + " calculated: " + resultStr);
+        clientHandler.sendMessage(resultStr);
     }
 	
 	public void closeSocket() {

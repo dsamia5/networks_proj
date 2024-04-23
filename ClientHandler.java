@@ -38,7 +38,7 @@ public class ClientHandler implements Runnable {
 			server.logActivity("Client " + clientUsername + " connected.");
 			
 			// Acknowledge successful connection to the client
-			bufferedWriter.write("ACK\n");
+			bufferedWriter.write("Welcome " + clientUsername + "!\n");
 			bufferedWriter.flush();
 	
 			while (socket.isConnected()) {
@@ -57,16 +57,32 @@ public class ClientHandler implements Runnable {
 					handleMathRequest(messageFromClient);
 				} else {
 					// Broadcast regular messages to other clients
-					broadcastMessage(messageFromClient);
+					broadcastMessage(this.clientUsername + ": " + messageFromClient);
 				}
 			}
 		} catch (IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter);
 		}
 	}
-    
+
+    public String username() {
+        return this.clientUsername;
+    }
+        
+    // Send a message to this client
+    public void sendMessage(String messageToSend) {
+        try {
+            this.bufferedWriter.write(messageToSend);
+            this.bufferedWriter.newLine();
+            this.bufferedWriter.flush();
+        } catch (IOException e) {
+            closeAll(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
     // Send out message to all clients (might be useful for future)
     public void broadcastMessage(String messageToSend) {
+        server.logActivity(messageToSend);
         for (ClientHandler clientHandler : clientHandlers) {
             try {
                 if (!clientHandler.clientUsername.equals(clientUsername)) {
